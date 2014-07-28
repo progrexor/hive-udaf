@@ -9,31 +9,31 @@ import org.apache.hadoop.hive.ql.exec.UDAFEvaluator;
 @SuppressWarnings("deprecation")
 public final class Mode extends UDAF {
   public static class Evaluator implements UDAFEvaluator {
-    private HashMap<String, Integer> buffer;
+    private HashMap<String, Long> buffer;
 
     public Evaluator() {
       init();
     }
 
     public void init() {
-      buffer = new HashMap<String, Integer>();
+      buffer = new HashMap<String, Long>();
     }
 
     public boolean iterate(String key) {
       if (!buffer.containsKey(key)) {
-        buffer.put(key, 1);
+        buffer.put(key, 1L);
       } else {
-        Integer val = buffer.get(key);
+        Long val = buffer.get(key);
         buffer.put(key, val + 1);
       }
       return true;
     }
 
-    public HashMap<String, Integer> terminatePartial() {
+    public HashMap<String, Long> terminatePartial() {
       return buffer;
     }
 
-    public boolean merge(HashMap<String, Integer> another) {
+    public boolean merge(HashMap<String, Long> another) {
       if (another == null) {
         return true;
       }
@@ -54,9 +54,9 @@ public final class Mode extends UDAF {
       return findMax(buffer);
     }
 
-    public String findMax(HashMap<String, Integer> buffer) {
-      Entry<String, Integer> maxEntry = null;
-      for (Entry<String, Integer> entry : buffer.entrySet()) {
+    public String findMax(HashMap<String, Long> buffer) {
+      Entry<String, Long> maxEntry = null;
+      for (Entry<String, Long> entry : buffer.entrySet()) {
         if (maxEntry == null || entry.getValue() > maxEntry.getValue()) {
           maxEntry = entry;
         }
